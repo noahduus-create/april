@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine?</title>
+  <style>
+    :root { --bg1:#ffdde1; --bg2:#ee9ca7; --card:#ffffffcc; --text:#222; }
+    body{
+      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+      color:var(--text);
+      overflow:hidden;
+    }
+    .card{
+      width:min(520px, 92vw);
+      background:var(--card);
+      backdrop-filter: blur(8px);
+      border:1px solid #ffffff80;
+      border-radius:24px;
+      padding:28px 22px;
+      text-align:center;
+      box-shadow: 0 18px 50px #00000020;
+      position:relative;
+      z-index:1;
+    }
+    h1{ margin:0 0 10px 0; font-size:clamp(28px, 5vw, 40px); }
+    p{ margin:0 0 20px 0; font-size:18px; opacity:.9; }
+    .btnRow{
+      position:relative;
+      height:70px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:16px;
+      margin-top:10px;
+    }
+    button{
+      border:0;
+      border-radius:14px;
+      padding:14px 18px;
+      font-size:18px;
+      font-weight:650;
+      cursor:pointer;
+      box-shadow: 0 10px 25px #00000018;
+      transition: transform .15s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #yesBtn{ background:#22c55e; color:white; }
+    #yesBtn:hover{ transform: translateY(-1px) scale(1.02); }
+    #noBtn{
+      position:absolute;
+      background:#ff4d6d;
+      color:white;
+      left:50%;
+      top:0;
+      transform: translateX(90px);
+      touch-action:none;
+      z-index:2;
+    }
+    #msg{
+      margin-top:18px;
+      font-size:20px;
+      font-weight:700;
+      display:none;
+    }
+    .hearts{
+      position:absolute; inset:0; pointer-events:none;
+      background-image:
+        radial-gradient(#ffffff70 1px, transparent 2px),
+        radial-gradient(#ffffff50 1px, transparent 2px);
+      background-size: 60px 60px, 90px 90px;
+      background-position: 0 0, 30px 20px;
+      opacity:.35;
+      filter: blur(.2px);
+      z-index:0;
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts"></div>
+
+  <div class="card">
+    <h1>Will you be my Valentine? 💖</h1>
+    <p>Choose wisely 😇</p>
+
+    <div class="btnRow" id="arena">
+      <button id="yesBtn">Yes</button>
+      <button id="noBtn" tabindex="-1">No</button>
+    </div>
+
+    <div id="msg">YAY!! 🥰 I love you ❤️</div>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const msg = document.getElementById("msg");
+    const arena = document.getElementById("arena");
+
+    function moveNoButton() {
+      const arenaRect = arena.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      // Make sure button stays within visible area of arena
+      const maxX = Math.max(0, arenaRect.width - btnRect.width);
+      const maxY = Math.max(0, arenaRect.height - btnRect.height);
+
+      // Random positions
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+      noBtn.style.transform = "none";
+    }
+
+    // Desktop: move button on hover or mouse near
+    noBtn.addEventListener("mouseenter", moveNoButton);
+    arena.addEventListener("mousemove", (e) => {
+      const btn = noBtn.getBoundingClientRect();
+      const dx = e.clientX - (btn.left + btn.width / 2);
+      const dy = e.clientY - (btn.top + btn.height / 2);
+      const dist = Math.hypot(dx, dy);
+      if (dist < 80) moveNoButton(); // smaller radius works better
+    });
+
+    // Mobile: move button on touch
+    noBtn.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      moveNoButton();
+    }, { passive: false });
+
+    // Prevent click on no button by moving it immediately
+    noBtn.addEventListener("mousedown", moveNoButton);
+    noBtn.addEventListener("click", moveNoButton);
+
+    // yes button shows message and disables buttons
+    yesBtn.addEventListener("click", () => {
+      msg.style.display = "block";
+      noBtn.style.display = "none";
+      yesBtn.textContent = "Yes ✅";
+      yesBtn.disabled = true;
+    });
+  </script>
+</body>
+</html>
